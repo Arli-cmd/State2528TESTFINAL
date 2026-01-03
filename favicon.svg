@@ -1,0 +1,27 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dark Background (Void color) -->
+  <rect width="64" height="64" rx="16" fill="#02040A"/>
+  
+  <!-- Subtle Border Glow -->
+  <rect x="1" y="1" width="62" height="62" rx="15" stroke="url(#gold_gradient)" stroke-opacity="0.2" stroke-width="2"/>
+
+  <!-- Crown Base -->
+  <path d="M16 46H48V50H16V46Z" fill="url(#gold_gradient)"/>
+  
+  <!-- Crown Spikes -->
+  <path d="M16 36L24 44L32 24L40 44L48 36V44H16V36Z" fill="url(#gold_gradient)"/>
+  
+  <!-- Crown Jewels/Points -->
+  <circle cx="16" cy="32" r="3" fill="url(#gold_gradient)"/>
+  <circle cx="32" cy="20" r="3.5" fill="url(#gold_gradient)"/>
+  <circle cx="48" cy="32" r="3" fill="url(#gold_gradient)"/>
+
+  <!-- Gradient Definition -->
+  <defs>
+    <linearGradient id="gold_gradient" x1="16" y1="20" x2="48" y2="50" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFBEB"/> <!-- Gold 50 -->
+      <stop offset="0.4" stop-color="#FBBF24"/> <!-- Gold 400 -->
+      <stop offset="1" stop-color="#B45309"/> <!-- Gold 700 -->
+    </linearGradient>
+  </defs>
+</svg>

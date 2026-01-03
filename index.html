@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>STATE 2528 | Golden Empire</title>
+    <meta name="description" content="State 2528 - Unity Within. Dominance Without." />
+    
+        <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+        <link rel="stylesheet" href="style.css">
+
+        <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              serif: ['Cinzel', 'serif'],
+            },
+            colors: {
+              gold: {
+                50: '#fffbeb',
+                100: '#fef3c7',
+                200: '#fde68a',
+                300: '#fcd34d',
+                400: '#fbbf24',
+                500: '#f59e0b',
+                600: '#d97706',
+                700: '#b45309',
+                800: '#92400e',
+                900: '#78350f',
+                950: '#451a03',
+              },
+              void: '#02040a', // Darker void
+            },
+            boxShadow: {
+              'glow': '0 0 30px -5px rgba(251, 191, 36, 0.15)',
+              'glow-hover': '0 0 50px -10px rgba(251, 191, 36, 0.3)',
+            }
+          },
+        },
+      }
+    </script>
+    
+    <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.2.0",
+    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+    "framer-motion": "https://esm.sh/framer-motion@10.16.4?deps=react@18.2.0,react-dom@18.2.0",
+    "lucide-react": "https://esm.sh/lucide-react@0.292.0?deps=react@18.2.0",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "vite": "https://esm.sh/vite@^7.3.0",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
+  }
+}
+</script>
+  
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+    <div id="root" class="min-h-screen flex items-center justify-center text-gold-500 font-serif bg-void">
+        <div class="flex flex-col items-center gap-4 animate-pulse">
+            <div class="w-12 h-12 border-2 border-gold-500 border-t-transparent rounded-full animate-spin"></div>
+            <span class="tracking-[0.3em] text-xs uppercase">Loading Empire</span>
+        </div>
+    </div>
+
+    <script type="text/babel" data-type="module">
+        import React, { useState, useEffect, useRef } from 'react';
+        import { createRoot } from 'react-dom/client';
+        import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+        import { 
+            Shield, Globe, Crown, MessageSquare, 
+            Users, Swords, ChevronDown, Check,
+            Target, Zap, Calendar, MapPin
+        } from 'lucide-react';
+
+        import { COPY, Lang } from './translations.js';
+
+
+        const GoldenDustBackground = () => {
+          const canvasRef = useRef(null);
+
+          useEffect(() => {
+            const canvas = canvasRef.current;
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+
+            let animationFrameId;
+            let particles = [];
+
+            const resize = () => {
+              canvas.width = window.innerWidth;
+              canvas.height = window.innerHeight;
+            };
+
+            const createParticles = () => {
+              // Optimized count for mobile/desktop
+              const particleCount = Math.min(window.innerWidth * 0.08, 70); 
+              particles = [];
+              for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                  x: Math.random() * canvas.width,
+                  y: Math.random() * canvas.height,
+                  size: Math.random() * 2 + 0.2, // Smaller size for "dust" feel
+                  speedY: Math.random() * 0.3 + 0.05, // Slow upward float
+                  speedX: (Math.random() - 0.5) * 0.2, // Very slight drift
+                  opacity: Math.random() * 0.5 + 0.1,
+                  pulseSpeed: Math.random() * 0.02 + 0.005,
+                  pulseOffset: Math.random() * Math.PI * 2
+                });
+              }
+            };
+
+            let time = 0;
+
+            const animate = () => {
+              ctx.clearRect(0, 0, canvas.width, canvas.height);
+              time += 1;
+              
+              particles.forEach((p) => {
+                // Movement: Float Up
+                p.y -= p.speedY;
+                p.x += p.speedX;
+
+                // Wrap around
+                if (p.y < 0) {
+                    p.y = canvas.height;
+                    p.x = Math.random() * canvas.width;
+                }
+                if (p.x > canvas.width) p.x = 0;
+                if (p.x < 0) p.x = canvas.width;
+
+                // Twinkle effect (Opacity pulse)
+                const currentOpacity = p.opacity + Math.sin(time * p.pulseSpeed + p.pulseOffset) * 0.1;
+                const safeOpacity = Math.max(0, Math.min(1, currentOpacity));
+
+                // Draw Gold Dust
+                const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 2);
+                gradient.addColorStop(0, `rgba(251, 191, 36, ${safeOpacity})`); // Core
+                gradient.addColorStop(1, `rgba(251, 191, 36, 0)`); // Glow
+
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size * 2, 0, Math.PI * 2);
+                ctx.fill();
+              });
+
+              animationFrameId = requestAnimationFrame(animate);
+            };
+
+            window.addEventListener('resize', () => {
+              resize();
+              createParticles();
+            });
+
+            resize();
+            createParticles();
+            animate();
+
+            return () => {
+              window.removeEventListener('resize', resize);
+              cancelAnimationFrame(animationFrameId);
+            };
+          }, []);
+
+          return (
+            <div className="fixed inset-0 z-0 pointer-events-none bg-void">
+              {/* Cinematic Vignette */}
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(2,4,10,0.8)_80%,rgba(0,0,0,1)_100%)] z-10" />
+              
+              {/* Deep Gold Ambient Light (Bottom Right) */}
+              <div className="absolute bottom-[-20%] right-[-10%] w-[60vw] h-[60vw] bg-gold-600/5 blur-[150px] rounded-full z-0 mix-blend-screen animate-pulse duration-[10s]" />
+              
+              {/* Deep Blue/Void Ambient Light (Top Left) - for contrast */}
+              <div className="absolute top-[-20%] left-[-10%] w-[60vw] h-[60vw] bg-slate-800/20 blur-[150px] rounded-full z-0" />
+
+              <canvas ref={canvasRef} className="absolute inset-0 w-full h-full z-1" />
+            </div>
+          );
+        };
+
+        const Button = ({ variant = 'primary', children, className = '', ...props }) => {
+          const baseStyles = "relative inline-flex items-center justify-center px-8 py-4 text-xs font-bold tracking-[0.2em] uppercase rounded-full transition-all duration-500 overflow-hidden group";
+          
+          const variants = {
+            // Polished Gold Metal Look
+            primary: "bg-gradient-to-br from-gold-100 via-gold-400 to-gold-700 text-slate-950 shadow-[0_0_25px_-5px_rgba(251,191,36,0.5)] border border-gold-200/50 hover:shadow-[0_0_40px_-5px_rgba(251,191,36,0.7)] hover:scale-105",
+            // Glassy look
+            ghost: "bg-white/5 text-gold-200 border border-gold-500/30 hover:bg-gold-500/10 hover:border-gold-400 backdrop-blur-md hover:shadow-glow",
+          };
+
+          return (
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              className={`${baseStyles} ${variants[variant]} ${className}`}
+              {...props}
+            >
+              {variant === 'primary' && (
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent -translate-x-[200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out z-20" />
+              )}
+              <span className="relative z-10 flex items-center gap-2 font-serif">{children}</span>
+            </motion.button>
+          );
+        };
+
+        const Card = ({ children, className = '', delay = 0, featured = false }) => {
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.7, delay, ease: "easeOut" }}
+              className={`
+                relative rounded-[2rem] backdrop-blur-xl transition-all duration-500 group
+                bg-slate-900/40 border border-white/5 hover:border-gold-500/30
+                hover:shadow-glow-hover hover:-translate-y-1
+                ${className}
+              `}
+            >
+              {/* Inner subtle noise/texture could go here, but keeping it clean for mobile */}
+              <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
+              
+              <div className="relative z-10 p-8 h-full flex flex-col">
+                {children}
+              </div>
+            </motion.div>
+          );
+        };
+
+
+        const App = () => {
+          const [lang, setLang] = useState(Lang.ENG);
+          const t = COPY[lang];
+          const { scrollY } = useScroll();
+          const [isMenuOpen, setIsMenuOpen] = useState(false);
+          
+          const heroY = useTransform(scrollY, [0, 500], [0, 200]);
+          const opacityHero = useTransform(scrollY, [0, 400], [1, 0]);
+
+          useEffect(() => {
+            const saved = localStorage.getItem('state2528_lang');
+            if (saved && Lang[saved]) {
+              setLang(saved);
+            }
+          }, []);
+
+          const changeLang = (l) => {
+            setLang(l);
+            localStorage.setItem('state2528_lang', l);
+            setIsMenuOpen(false);
+          };
+
+          const navLinks = [
+            { id: 'about', label: t.nav.about },
+            { id: 'nap', label: t.nav.nap },
+            { id: 'reasons', label: t.nav.reasons },
+            { id: 'alliances', label: t.nav.alliances },
+            { id: 'apply', label: t.nav.apply },
+          ];
+
+          const scrollTo = (id) => {
+            document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+            setIsMenuOpen(false);
+          };
+
+          return (
+            <div className="min-h-screen font-sans selection:bg-gold-500/30 selection:text-gold-100 relative">
+              <GoldenDustBackground />
+
+              {/* Navigation */}
+              <motion.nav 
+                initial={{ y: -100 }}
+                animate={{ y: 0 }}
+                transition={{ duration: 0.8 }}
+                className="fixed top-0 left-0 right-0 z-50 h-24 flex items-center bg-gradient-to-b from-void/90 to-transparent backdrop-blur-sm"
+              >
+                <div className="max-w-7xl mx-auto px-6 w-full flex items-center justify-between">
+                  <div 
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                    className="flex items-center gap-4 cursor-pointer group"
+                  >
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-slate-900 to-black border border-gold-500/30 flex items-center justify-center shadow-lg group-hover:border-gold-400/60 transition-colors duration-500">
+                      <span className="text-gold-400 text-xl group-hover:scale-110 transition-transform duration-300">♛</span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-gold-100 font-serif font-bold tracking-[0.25em] leading-none text-lg">2528</span>
+                      <span className="text-[10px] text-gold-500/70 tracking-[0.4em] uppercase mt-1">Golden Empire</span>
+                    </div>
+                  </div>
+
+                  <div className="hidden md:flex items-center gap-10">
+                    {navLinks.map((link) => (
+                      <button 
+                        key={link.id}
+                        onClick={() => scrollTo(link.id)}
+                        className="text-xs font-bold text-slate-400 hover:text-gold-300 transition-colors tracking-[0.2em] uppercase relative group py-2"
+                      >
+                        {link.label}
+                        <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[1px] bg-gold-400 shadow-[0_0_10px_#fbbf24] transition-all duration-300 group-hover:w-full" />
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="relative">
+                    <button 
+                      onClick={() => setIsMenuOpen(!isMenuOpen)}
+                      className="flex items-center gap-2 px-4 py-2 rounded-full border border-gold-500/20 bg-white/5 hover:bg-gold-500/10 transition-colors text-[10px] font-bold tracking-widest text-gold-200 uppercase backdrop-blur-md"
+                    >
+                      <span>{lang}</span>
+                      <ChevronDown size={12} className={`transition-transform duration-300 ${isMenuOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    <AnimatePresence>
+                      {isMenuOpen && (
+                        <motion.div 
+                          initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                          className="absolute right-0 mt-3 w-32 py-2 rounded-2xl bg-slate-900/90 border border-gold-500/20 shadow-glow backdrop-blur-xl z-50 overflow-hidden"
+                        >
+                          {Object.values(Lang).map((l) => (
+                            <button
+                              key={l}
+                              onClick={() => changeLang(l)}
+                              className={`w-full text-left px-5 py-3 text-[10px] font-bold tracking-widest hover:bg-gold-500/10 transition-colors ${lang === l ? 'text-gold-400' : 'text-slate-400'}`}
+                            >
+                              {l}
+                            </button>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </div>
+              </motion.nav>
+
+              <main className="relative z-10">
+                
+                {/* Hero */}
+                <section id="about" className="relative min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden pt-20">
+                  <motion.div style={{ y: heroY, opacity: opacityHero }} className="text-center max-w-6xl mx-auto z-10 relative">
+                    
+                    {/* Decorative Top Line */}
+                    <motion.div 
+                        initial={{ height: 0 }}
+                        animate={{ height: 60 }}
+                        transition={{ duration: 1, delay: 0.5 }}
+                        className="w-[1px] bg-gradient-to-b from-transparent via-gold-500/50 to-transparent mx-auto mb-8"
+                    />
+
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.2, duration: 0.8 }}
+                      className="inline-flex items-center gap-4 px-8 py-3 rounded-full border border-gold-500/20 bg-gold-900/10 backdrop-blur-md mb-12"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-gold-400 shadow-[0_0_10px_#fbbf24] animate-pulse"></span>
+                      <span className="text-gold-200 text-[10px] font-bold tracking-[0.4em] uppercase">{t.hero.subtitle}</span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-gold-400 shadow-[0_0_10px_#fbbf24] animate-pulse"></span>
+                    </motion.div>
+                    
+                    <motion.h1 
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 1, ease: "easeOut", delay: 0.4 }}
+                      className="text-gold-gradient font-serif font-black text-6xl md:text-8xl lg:text-9xl tracking-tight leading-none mb-10 drop-shadow-2xl"
+                    >
+                      STATE <span className="text-gold-shine">2528</span>
+                    </motion.h1>
+                    
+                    <motion.p 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.8, duration: 1 }}
+                      className="text-sm md:text-xl text-slate-300 tracking-[0.5em] uppercase font-light mb-24 max-w-4xl mx-auto leading-relaxed"
+                    >
+                      {t.hero.slogan}
+                    </motion.p>
+                  </motion.div>
+
+                  <motion.div 
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1, duration: 0.8 }}
+                    className="w-full max-w-5xl mx-auto mb-20"
+                  >
+                    <Card className="!bg-gradient-to-r !from-slate-900/60 !via-slate-900/80 !to-slate-900/60">
+                      <div className="flex flex-col md:flex-row gap-12 items-center">
+                        <div className="flex-1 text-center md:text-left space-y-6">
+                          <span className="text-gold-500 text-[10px] font-bold tracking-[0.3em] uppercase block">
+                            {t.about.kicker}
+                          </span>
+                          <h2 className="text-3xl md:text-4xl font-serif font-bold text-white tracking-wide">{t.about.title}</h2>
+                          <div className="w-16 h-[2px] bg-gold-500/50 mx-auto md:mx-0 rounded-full"></div>
+                          <p className="text-slate-300 leading-relaxed text-sm md:text-base font-light tracking-wide">{t.about.shortIntro}</p>
+                        </div>
+                        <div className="flex flex-col gap-4 min-w-[200px]">
+                          {[t.about.status.active, t.about.status.nap, t.about.status.coord].map((status, i) => (
+                            <div key={i} className="px-6 py-4 rounded-xl border border-gold-500/10 bg-white/5 text-[10px] font-bold tracking-[0.2em] text-gold-300 uppercase text-center hover:bg-gold-500/10 transition-colors duration-300">
+                              {status}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </Card>
+                  </motion.div>
+                </section>
+
+                {/* NAP */}
+                <section id="nap" className="py-32 px-4 relative">
+                  <div className="max-w-7xl mx-auto">
+                    <div className="text-center mb-24">
+                      <span className="text-gold-500 text-[10px] font-bold tracking-[0.4em] uppercase block mb-6">{t.nap.kicker}</span>
+                      <h2 className="text-4xl md:text-6xl font-serif font-bold text-white mb-8 text-gold-gradient">{t.nap.title}</h2>
+                      <p className="text-slate-400 max-w-2xl mx-auto text-base md:text-lg leading-relaxed font-light">{t.nap.desc}</p>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8">
+                      <div className="md:col-span-2">
+                        <Card delay={0.2} className="h-full">
+                          <h3 className="text-2xl font-serif font-bold text-white mb-10 flex items-center gap-4">
+                            <span className="w-12 h-12 flex items-center justify-center border border-gold-500/30 rounded-full bg-gold-500/5 text-gold-400 shadow-glow">
+                                <Shield size={20} />
+                            </span> 
+                            {t.nap.rulesTitle}
+                          </h3>
+                          <ul className="grid gap-4">
+                            {t.nap.rules.map((rule, idx) => (
+                              <li key={idx} className="flex items-start gap-5 p-6 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-gold-500/[0.05] hover:border-gold-500/20 transition-all duration-300">
+                                <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gold-400 shadow-[0_0_10px_#fbbf24] shrink-0" />
+                                <span className="text-slate-300 text-sm font-light tracking-wide leading-relaxed">{rule}</span>
+                              </li>
+                            ))}
+                          </ul>
+
+                          <div className="mt-12 pt-8 border-t border-white/5">
+                            <h4 className="text-[10px] font-bold text-gold-500/60 uppercase tracking-[0.3em] mb-6">{t.nap.napAlliancesTitle}</h4>
+                            <div className="flex flex-wrap gap-3">
+                              {['KOR', 'ONE', 'AFK', 'GOD', 'GPR', 'PPP'].map(tag => (
+                                <span key={tag} className="px-8 py-3 rounded-full border border-white/10 bg-black/20 text-slate-300 text-[10px] font-bold tracking-[0.2em] hover:border-gold-500/40 hover:text-gold-300 hover:bg-gold-500/5 transition-all cursor-default">
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </Card>
+                      </div>
+
+                      <div className="md:col-span-1 space-y-8">
+                        <Card delay={0.4} className="h-full flex flex-col justify-center text-center md:text-left">
+                          <div className="w-20 h-20 mx-auto md:mx-0 rounded-full bg-gradient-to-b from-gold-500/20 to-transparent border border-gold-500/30 flex items-center justify-center mb-10 shadow-glow">
+                            <Crown size={36} className="text-gold-200" />
+                          </div>
+                          <h3 className="text-xl font-serif font-bold text-white mb-6">{t.nap.rotationTitle}</h3>
+                          <p className="text-sm text-slate-400 leading-relaxed font-light mb-8">{t.nap.rotationDesc}</p>
+                          <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-gold-500/20 to-transparent mb-8" />
+                          <p className="text-sm text-slate-400 leading-relaxed font-light">{t.nap.fortsDesc}</p>
+                        </Card>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Reasons */}
+                <section id="reasons" className="py-32 px-4 relative">
+                  {/* Subtle gradient background for this section */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gold-900/5 to-transparent pointer-events-none" />
+                  
+                  <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="mb-24 flex flex-col md:flex-row items-end justify-between gap-8 border-b border-white/5 pb-10">
+                      <div>
+                         <span className="text-gold-500 text-[10px] font-bold tracking-[0.4em] uppercase block mb-4">{t.reasons.kicker}</span>
+                         <h2 className="text-4xl md:text-5xl font-serif font-bold text-white">{t.reasons.title}</h2>
+                      </div>
+                    </div>
+
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {t.reasons.items.map((item, idx) => {
+                        const icons = [Globe, Crown, MessageSquare, Target, Swords, Users];
+                        const Icon = icons[idx] || Target;
+                        return (
+                          <Card key={idx} delay={idx * 0.1} className="group hover:-translate-y-2 transition-transform duration-500 !bg-slate-900/20">
+                            <div className="flex items-center gap-6 mb-8">
+                                <div className="w-14 h-14 flex items-center justify-center rounded-2xl border border-white/5 bg-white/5 group-hover:border-gold-500/30 group-hover:bg-gold-500/10 transition-colors duration-500 shadow-lg">
+                                    <Icon className="text-slate-400 group-hover:text-gold-300 transition-colors" size={24} />
+                                </div>
+                            </div>
+                            <h3 className="text-lg font-bold text-gold-100 mb-4 tracking-wide font-serif group-hover:text-white transition-colors">{item.title}</h3>
+                            <p className="text-sm text-slate-400 leading-relaxed font-light">{item.desc}</p>
+                          </Card>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </section>
+
+                {/* Alliances */}
+                <section id="alliances" className="py-32 px-4">
+                  <div className="max-w-7xl mx-auto">
+                    <div className="text-center mb-24">
+                      <span className="text-gold-500 text-[10px] font-bold tracking-[0.4em] uppercase block mb-6">{t.alliances.kicker}</span>
+                      <h2 className="text-4xl md:text-6xl font-serif font-bold text-gold-gradient mb-8">{t.alliances.title}</h2>
+                      <p className="text-slate-400 max-w-xl mx-auto text-base font-light tracking-wide">{t.alliances.subtitle}</p>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-12">
+                      {t.alliances.cards.map((alliance, idx) => (
+                        <Card key={alliance.tag} delay={idx * 0.1} className="flex flex-col h-full !p-0 overflow-hidden !rounded-[2.5rem]">
+                          
+                          {/* Upper Section */}
+                          <div className="p-10 pb-8 relative z-10 bg-gradient-to-b from-white/5 to-transparent">
+                            <div className="flex justify-between items-start mb-8">
+                              <h3 className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-gold-200 to-gold-700 tracking-tighter opacity-90 drop-shadow-sm">
+                                {alliance.tag}
+                              </h3>
+                              <div className="px-4 py-1.5 rounded-full border border-gold-500/30 text-[9px] text-gold-300 font-bold uppercase tracking-[0.2em] bg-gold-900/20">
+                                ALLIANCE
+                              </div>
+                            </div>
+                            <h4 className="text-2xl font-serif font-bold text-white mb-4 italic leading-tight">"{alliance.motto}"</h4>
+                            <p className="text-slate-400 text-sm leading-relaxed font-light">{alliance.desc}</p>
+                          </div>
+
+                          <div className="flex-1" />
+
+                          {/* Info Section */}
+                          <div className="bg-black/30 p-10 border-t border-white/5 relative z-10 backdrop-blur-sm">
+                            <div className="grid grid-cols-2 gap-10 mb-10">
+                              <div>
+                                <div className="flex items-center gap-3 mb-5 text-gold-500">
+                                  <Zap size={16} />
+                                  <span className="text-[10px] font-bold tracking-[0.2em] uppercase">Requirements</span>
+                                </div>
+                                <ul className="space-y-3">
+                                  {alliance.reqs.map((r, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-xs text-slate-300 font-medium">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-gold-500 shadow-[0_0_8px_#fbbf24]"></span>
+                                      {r}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+
+                              <div>
+                                <div className="flex items-center gap-3 mb-5 text-gold-500">
+                                   <MapPin size={16} />
+                                   <span className="text-[10px] font-bold tracking-[0.2em] uppercase">{t.alliances.coordsTitle}</span>
+                                </div>
+                                <div className="text-sm font-mono text-gold-200 border-l-2 border-gold-500/30 pl-4 py-1">
+                                  {alliance.coords}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="pt-8 border-t border-white/5">
+                                <div className="flex items-center gap-3 mb-5 text-gold-500">
+                                  <Calendar size={16} />
+                                  <span className="text-[10px] font-bold tracking-[0.2em] uppercase">{t.alliances.scheduleTitle}</span>
+                                </div>
+                                <div className="space-y-4">
+                                  {alliance.schedule.map((ev, i) => (
+                                    <div key={i} className="flex justify-between items-center text-xs border-b border-white/5 pb-3 last:border-0 last:pb-0 group/item">
+                                      <span className="text-slate-400 tracking-wide group-hover/item:text-gold-200 transition-colors">{ev.label}</span>
+                                      <span className="text-gold-100 font-mono text-[10px] opacity-80 bg-gold-500/10 px-3 py-1 rounded-full border border-gold-500/10">{ev.time}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                            </div>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                </section>
+
+                {/* Apply */}
+                <section id="apply" className="py-40 px-4 relative overflow-hidden">
+                   {/* Giant Glow */}
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gold-600/10 blur-[150px] rounded-full pointer-events-none" />
+                  
+                  <div className="max-w-3xl mx-auto relative z-10 text-center">
+                     <Card className="!bg-black/60 !backdrop-blur-xl border-gold-500/30 !rounded-[3rem]">
+                       <div className="py-16 px-4 md:px-12">
+                         <Crown size={48} className="text-gold-400 mx-auto mb-10 opacity-80 drop-shadow-glow" />
+                         <span className="text-gold-500 text-[10px] font-bold tracking-[0.4em] uppercase block mb-8">{t.apply.kicker}</span>
+                         <h2 className="text-4xl md:text-6xl font-serif font-bold text-white mb-10">{t.apply.title}</h2>
+                         <p className="text-slate-300 max-w-lg mx-auto mb-14 text-base leading-relaxed font-light">{t.apply.desc}</p>
+                         
+                         <Button className="w-full md:w-auto min-w-[280px]"
+                           onClick={() => window.open('https://docs.google.com/forms/d/e/1FAIpQLSeYNnMBW5FQR9PU9rWNPF5cS-XRgh7iXY_pYvsXVp-_7ttgMw/viewform','_blank')}>
+                           {t.apply.button}
+                         </Button>
+
+                         <div className="mt-16 pt-8 border-t border-white/5">
+                            <p className="text-[10px] text-gold-500/60 uppercase tracking-[0.3em] font-bold">{t.apply.note}</p>
+                         </div>
+                       </div>
+                     </Card>
+                  </div>
+                </section>
+
+                {/* Footer */}
+                <footer className="py-24 border-t border-white/5 bg-void text-center relative z-10">
+                   <div className="flex flex-col items-center justify-center gap-6 mb-10 opacity-60 hover:opacity-100 transition-opacity duration-500">
+                      <div className="w-16 h-16 rounded-full bg-slate-900 border border-gold-500/20 flex items-center justify-center shadow-lg">
+                         <span className="text-gold-500 text-2xl">♛</span>
+                      </div>
+                      <span className="text-2xl font-serif font-bold tracking-[0.3em] text-slate-300">2528</span>
+                   </div>
+                   <p className="text-gold-600/60 text-[10px] font-bold tracking-[0.5em] uppercase mb-6">{t.footer.line}</p>
+                   <p className="text-slate-700 text-[10px] tracking-widest">{t.footer.small}</p>
+                </footer>
+
+              </main>
+            </div>
+          );
+        };
+
+        const root = createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
